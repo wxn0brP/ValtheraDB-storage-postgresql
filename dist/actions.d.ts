@@ -1,0 +1,46 @@
+import { Id } from "@wxn0brp/db-core";
+import { ActionsBase } from "@wxn0brp/db-core/base/actions";
+import { DataInternal } from "@wxn0brp/db-core/types/data";
+import { VQueryT } from "@wxn0brp/db-core/types/query";
+import { TransactionHandle } from "@wxn0brp/db-core/types/transaction";
+import { PostgreSQLValtheraOptions, SupportedPostgreSQL } from "./types.js";
+export declare class PostgreSQLValthera extends ActionsBase {
+    db: SupportedPostgreSQL;
+    _inited: boolean;
+    version: string;
+    capabilities: {
+        transactions: boolean;
+        indexes: boolean;
+        persistent: boolean;
+    };
+    schema?: string;
+    mode: "strict" | "lazy";
+    primaryKeyOption: string | Record<string, string>;
+    private connectionString?;
+    private _knownCollections;
+    constructor(db: SupportedPostgreSQL, opts?: PostgreSQLValtheraOptions);
+    init(): Promise<void>;
+    close(): Promise<void>;
+    query<T extends Record<string, any> = Record<string, any>>(sql: string, values?: any[]): Promise<import("pg").QueryResult<T>>;
+    table(collection: string): string;
+    metadataTable(collection: string): string;
+    primaryKey(collection: string): string;
+    getCollections(): Promise<string[]>;
+    ensureCollection(collection: string): Promise<boolean>;
+    issetCollection(collection: string): Promise<boolean>;
+    removeCollection(collection: string): Promise<boolean>;
+    add(config: VQueryT.Add): Promise<DataInternal>;
+    bulkAdd(config: VQueryT.BulkAdd): Promise<DataInternal[]>;
+    find(config: VQueryT.Find): Promise<import("@wxn0brp/db-core/types/data").Data[]>;
+    findOne(config: VQueryT.Find): Promise<import("@wxn0brp/db-core/types/data").Data>;
+    update(config: VQueryT.Update): Promise<DataInternal[]>;
+    updateOne(config: VQueryT.Update): Promise<DataInternal>;
+    remove(config: VQueryT.Remove): Promise<DataInternal[]>;
+    removeOne(config: VQueryT.Remove): Promise<DataInternal>;
+    beginTransaction(id: Id, collections?: string[]): Promise<TransactionHandle>;
+    commitTransaction(handle: TransactionHandle): Promise<void>;
+    rollbackTransaction(handle: TransactionHandle): Promise<void>;
+    createIndex(config: VQueryT.CreateIndex): Promise<void>;
+    removeIndex(config: VQueryT.RemoveIndex): Promise<void>;
+    count(config: VQueryT.Count): Promise<number>;
+}
